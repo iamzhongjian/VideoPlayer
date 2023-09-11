@@ -41,10 +41,12 @@ class PlayerRtp(val outputSurface: Surface) {
             }
         }
 
+        //需要先打开app，然后推流端再推流，因为先推流再打开app的话解码器没接收到SPS，PPS就会崩溃
         videoRtpWrapper.open(40018, 96, 90000);
         videoRtpWrapper.setCallback { data, len ->
             Log.d("dragon_video", "received video data $len")
             nalu.appended(data, len) { buffer, offset, size ->
+                Log.d("dragon_video", "received video data------offset:$offset, size:$size")
                 videoBufferQueue.put(buffer);
                 videoBufferSizeQueue.put(size);
             }
